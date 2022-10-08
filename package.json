@@ -2,7 +2,7 @@
   "name": "react-calendar-heatmap",
   "version": "1.9.0",
   "description": "A calendar heatmap component built on SVG, inspired by Github's commit calendar graph.",
-  "author": "Kevin Qi",
+  "author": "Kevin Qi, Forked by dgrahh",
   "main": "dist/react-calendar-heatmap.cjs.js",
   "module": "dist/react-calendar-heatmap.esm.js",
   "browser": "dist/react-calendar-heatmap.umd.js",
@@ -12,7 +12,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/kevinsqi/react-calendar-heatmap.git"
+    "url": "https://github.com/dgrahh/react-calendar-heatmap.git"
   },
   "license": "MIT",
   "keywords": [
