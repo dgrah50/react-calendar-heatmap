@@ -25,3 +25,7 @@ export function getRange(count) {
   }
   return arr;
 }
+
+export function convertToUtc(date) {
+  return Date.UTC(date.getFullYear(), date.getMonth(), date.getDate());
+}

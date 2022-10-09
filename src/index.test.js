@@ -112,15 +112,15 @@ describe('CalendarHeatmap props', () => {
 
     expect(
       today.getDate() ===
-        wrapper
-          .instance()
-          .getEndDate()
-          .getDate() &&
-        today.getMonth() ===
-          wrapper
-            .instance()
-            .getEndDate()
-            .getMonth(),
+      wrapper
+        .instance()
+        .getEndDate()
+        .getDate() &&
+      today.getMonth() ===
+      wrapper
+        .instance()
+        .getEndDate()
+        .getMonth(),
     ).toBe(true);
   });
 
@@ -132,15 +132,15 @@ describe('CalendarHeatmap props', () => {
 
     expect(
       today.getDate() ===
-        wrapper
-          .instance()
-          .getEndDate()
-          .getDate() &&
-        today.getMonth() ===
-          wrapper
-            .instance()
-            .getEndDate()
-            .getMonth(),
+      wrapper
+        .instance()
+        .getEndDate()
+        .getDate() &&
+      today.getMonth() ===
+      wrapper
+        .instance()
+        .getEndDate()
+        .getMonth(),
     ).toBe(true);
   });
 
@@ -200,7 +200,7 @@ describe('CalendarHeatmap props', () => {
     // in case if horizontal prop value is false
     const vertical = shallow(<CalendarHeatmap values={[]} horizontal={false} showWeekdayLabels />);
 
-    expect(vertical.find('text.react-calendar-heatmap-small-text')).toHaveLength(3);
+    expect(vertical.find('text.react-calendar-heatmap-small-text')).toHaveLength(7);
   });
 
   it('transformDayElement', () => {
@@ -216,7 +216,7 @@ describe('CalendarHeatmap props', () => {
       />,
     );
 
-    expect(wrapper.find('[data-test="ok"]')).toHaveLength(1);
+    expect(wrapper.find('[data-test="ok"]')).toHaveLength(2);
   });
 
   describe('tooltipDataAttrs', () => {
@@ -239,11 +239,35 @@ describe('CalendarHeatmap props', () => {
     });
   });
 
+  it('firstWeekdayMonday false', () => {
+    const calendar = shallow(<CalendarHeatmap
+      startDate={new Date("2015-12-31")}
+      endDate={new Date("2016-10-01")}
+      values={[]}
+      firstWeekdayMonday={false}
+    />);
+
+    const squares = calendar.find('.react-calendar-heatmap-week').first().find('rect');
+    expect(squares.length).toEqual(3);
+  });
+
+  it('firstWeekdayMonday true', () => {
+    const calendar = shallow(<CalendarHeatmap
+      startDate={new Date("2015-12-31")}
+      endDate={new Date("2016-10-01")}
+      values={[]}
+      firstWeekdayMonday
+    />);
+
+    const squares = calendar.find('.react-calendar-heatmap-week').first().find('rect');
+    expect(squares.length).toEqual(4);
+  });
+
   describe('event handlers', () => {
     const count = 999;
     const startDate = '2018-06-01';
     const endDate = '2018-06-03';
-    const values = [{ date: '2018-06-02', count }];
+    const values = [{ date: '2018-06-01', count }];
     const props = {
       values,
       startDate,

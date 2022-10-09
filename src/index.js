@@ -8,15 +8,16 @@ import {
   getBeginningTimeForDate,
   convertToDate,
   getRange,
+  convertToUtc,
 } from './helpers';
 
 const SQUARE_SIZE = 10;
 const MONTH_LABEL_GUTTER_SIZE = 4;
-const CSS_PSEDUO_NAMESPACE = 'react-calendar-heatmap-';
+const CSS_PSEUDO_NAMESPACE = 'react-calendar-heatmap-';
 
 class CalendarHeatmap extends React.Component {
   getDateDifferenceInDays() {
-    const { startDate, numDays } = this.props;
+    const { numDays } = this.props;
     if (numDays) {
       // eslint-disable-next-line no-console
       console.warn(
@@ -24,8 +25,10 @@ class CalendarHeatmap extends React.Component {
       );
       return numDays;
     }
-    const timeDiff = this.getEndDate() - convertToDate(startDate);
-    return Math.ceil(timeDiff / MILLISECONDS_IN_ONE_DAY);
+    const utc1 = convertToUtc(this.getStartDate());
+    const utc2 = convertToUtc(shiftDate(this.getEndDate(), 1)); // shift date 1 because end date is inclusive
+
+    return Math.floor((utc2 - utc1) / MILLISECONDS_IN_ONE_DAY);
   }
 
   getSquareSizeWithGutter() {
@@ -53,7 +56,7 @@ class CalendarHeatmap extends React.Component {
   }
 
   getStartDate() {
-    return shiftDate(this.getEndDate(), -this.getDateDifferenceInDays() + 1); // +1 because endDate is inclusive
+    return getBeginningTimeForDate(convertToDate(this.props.startDate));
   }
 
   getEndDate() {
@@ -65,11 +68,11 @@ class CalendarHeatmap extends React.Component {
   }
 
   getNumEmptyDaysAtStart() {
-    return this.getStartDate().getDay();
+    return this.props.firstWeekdayMonday ? (this.getStartDate().getDay() || 7) - 1 : this.getStartDate().getDay();
   }
 
   getNumEmptyDaysAtEnd() {
-    return DAYS_IN_WEEK - 1 - this.getEndDate().getDay();
+    return (DAYS_IN_WEEK - 1) - (this.props.firstWeekdayMonday ? (this.getEndDate().getDay() || 7) - 1 : this.getEndDate().getDay());
   }
 
   getWeekCount() {
@@ -99,8 +102,9 @@ class CalendarHeatmap extends React.Component {
 
   getValueCache = memoizeOne((props) =>
     props.values.reduce((memo, value) => {
-      const date = convertToDate(value.date);
-      const index = Math.floor((date - this.getStartDateWithEmptyDays()) / MILLISECONDS_IN_ONE_DAY);
+      const utc1 = convertToUtc(convertToDate(value.date));
+      const utc2 = convertToUtc(this.getStartDateWithEmptyDays());
+      const index = Math.floor((utc1 - utc2) / MILLISECONDS_IN_ONE_DAY);
       // eslint-disable-next-line no-param-reassign
       memo[index] = {
         value,
@@ -263,7 +267,7 @@ class CalendarHeatmap extends React.Component {
       <g
         key={weekIndex}
         transform={this.getTransformForWeek(weekIndex)}
-        className={`${CSS_PSEDUO_NAMESPACE}week`}
+        className={`${CSS_PSEUDO_NAMESPACE}week`}
       >
         {getRange(DAYS_IN_WEEK).map((dayIndex) =>
           this.renderSquare(dayIndex, weekIndex * DAYS_IN_WEEK + dayIndex),
@@ -285,7 +289,7 @@ class CalendarHeatmap extends React.Component {
       const endOfWeek = shiftDate(this.getStartDateWithEmptyDays(), (weekIndex + 1) * DAYS_IN_WEEK);
       const [x, y] = this.getMonthLabelCoordinates(weekIndex);
       return endOfWeek.getDate() >= 1 && endOfWeek.getDate() <= DAYS_IN_WEEK ? (
-        <text key={weekIndex} x={x} y={y} className={`${CSS_PSEDUO_NAMESPACE}month-label`}>
+        <text key={weekIndex} x={x} y={y} className={`${CSS_PSEUDO_NAMESPACE}month-label`}>
           {this.props.monthLabels[endOfWeek.getMonth()]}
         </text>
       ) : null;
@@ -296,10 +300,12 @@ class CalendarHeatmap extends React.Component {
     if (!this.props.showWeekdayLabels) {
       return null;
     }
-    return this.props.weekdayLabels.map((weekdayLabel, dayIndex) => {
+    const weekdayLabels = this.props.firstWeekdayMonday ? [...this.props.weekdayLabels.slice(1), this.props.weekdayLabels[0]] : this.props.weekdayLabels;
+
+    return weekdayLabels.map((weekdayLabel, dayIndex) => {
       const [x, y] = this.getWeekdayLabelCoordinates(dayIndex);
-      const cssClasses = `${this.props.horizontal ? '' : `${CSS_PSEDUO_NAMESPACE}small-text`
-        } ${CSS_PSEDUO_NAMESPACE}weekday-label`;
+      const cssClasses = `${this.props.horizontal ? '' : `${CSS_PSEUDO_NAMESPACE}small-text`
+        } ${CSS_PSEUDO_NAMESPACE}weekday-label`;
       return (
         <text key={`${x}${y}`} x={x} y={y} className={cssClasses}>
           {weekdayLabel}
@@ -315,19 +321,19 @@ class CalendarHeatmap extends React.Component {
       <svg className="react-calendar-heatmap" viewBox={this.getViewBox()}>
         <g
           transform={this.getTransformForMonthLabels()}
-          className={`${CSS_PSEDUO_NAMESPACE}month-labels`}
+          className={`${CSS_PSEUDO_NAMESPACE}month-labels`}
         >
           {this.renderMonthLabels()}
         </g>
         <g
           transform={this.getTransformForAllWeeks()}
-          className={`${CSS_PSEDUO_NAMESPACE}all-weeks`}
+          className={`${CSS_PSEUDO_NAMESPACE}all-weeks`}
         >
           {this.renderAllWeeks()}
         </g>
         <g
           transform={this.getTransformForWeekdayLabels()}
-          className={`${CSS_PSEDUO_NAMESPACE}weekday-labels`}
+          className={`${CSS_PSEUDO_NAMESPACE}weekday-labels`}
         >
           {this.renderWeekdayLabels()}
         </g>
@@ -360,6 +366,7 @@ CalendarHeatmap.propTypes = {
   onMouseOver: PropTypes.func, // callback function when mouse pointer is over a square
   onMouseLeave: PropTypes.func, // callback function when mouse pointer is left a square
   transformDayElement: PropTypes.func, // function to further transform the svg element for a single day
+  firstWeekdayMonday: PropTypes.bool, // whether to start the week from Monday instead of Sunday
 };
 
 CalendarHeatmap.defaultProps = {
@@ -369,6 +376,7 @@ CalendarHeatmap.defaultProps = {
   gutterSize: 1,
   horizontal: true,
   showMonthLabels: true,
+  firstWeekdayMonday: false,
   showWeekdayLabels: false,
   showOutOfRangeDays: false,
   tooltipDataAttrs: null,

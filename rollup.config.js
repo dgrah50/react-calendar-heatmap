@@ -2,6 +2,7 @@ import babel from 'rollup-plugin-babel';
 import commonjs from 'rollup-plugin-commonjs';
 import nodeResolve from 'rollup-plugin-node-resolve';
 import replace from 'rollup-plugin-replace';
+import copy from 'rollup-plugin-copy'
 import pkg from './package.json';
 
 export default [
@@ -42,6 +43,11 @@ export default [
       }),
       // Needs to happen after babel plugin
       commonjs(),
+      copy({
+        targets: [
+          { src: 'src/types/index.d.ts', dest: 'dist/' },
+        ]
+      })
     ],
   },
 ];

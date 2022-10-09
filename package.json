@@ -1,12 +1,13 @@
 {
   "name": "react-calendar-heatmap",
-  "version": "1.9.0",
+  "version": "1.9.2",
   "description": "A calendar heatmap component built on SVG, inspired by Github's commit calendar graph.",
   "author": "Kevin Qi, Forked by dgrahh",
   "main": "dist/react-calendar-heatmap.cjs.js",
   "module": "dist/react-calendar-heatmap.esm.js",
   "browser": "dist/react-calendar-heatmap.umd.js",
   "style": "dist/styles.css",
+  "types": "dist/index.d.ts",
   "files": [
     "dist"
   ],
@@ -73,6 +74,7 @@
     "rollup": "^1.6.0",
     "rollup-plugin-babel": "4",
     "rollup-plugin-commonjs": "^10.0.0",
+    "rollup-plugin-copy": "^3.4.0",
     "rollup-plugin-node-resolve": "^5.0.1",
     "rollup-plugin-replace": "^2.0.0",
     "rollup-plugin-uglify": "^6.0.0"
