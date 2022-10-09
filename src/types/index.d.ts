@@ -13,15 +13,16 @@ export interface CalendarHeatmapProps {
   showMonthLabels?: boolean;
   showWeekdayLabels?: boolean;
   showOutOfRangeDays?: boolean;
-  tooltipDataAttrs?: any | ((value: any) => any);
+  tooltipDataAttrs?: any | ((value: number) => void);
   titleForValue?: (value: any) => string;
   classForValue?: (value: any) => string;
   monthLabels?: string[];
   weekdayLabels?: string[];
-  onClick?: (value: any) => void;
-  onMouseOver?: (value: any) => void;
-  onMouseLeave?: (value: any) => void;
+  onClick?: (value: number) => void;
+  onMouseOver?: (value: number) => void;
+  onMouseLeave?: (value: number) => void;
   transformDayElement?: (element: any, value: any) => any;
+  shouldPadWeekdayLabels?: boolean;
 }
 
 

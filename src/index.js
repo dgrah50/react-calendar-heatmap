@@ -95,8 +95,7 @@ class CalendarHeatmap extends React.Component {
   getHeight() {
     return (
       this.getWeekWidth() +
-      (this.getMonthLabelSize() - this.props.gutterSize) +
-      this.getWeekdayLabelSize()
+      (this.getMonthLabelSize() - this.props.gutterSize)
     );
   }
 
@@ -162,6 +161,9 @@ class CalendarHeatmap extends React.Component {
 
   getTransformForWeekdayLabels() {
     if (this.props.horizontal) {
+      if (!this.props.shouldPadWeekdayLabels) {
+        return `translate(0, ${this.getMonthLabelSize()})`;
+      }
       return `translate(${SQUARE_SIZE}, ${this.getMonthLabelSize()})`;
     }
     return null;
@@ -367,6 +369,7 @@ CalendarHeatmap.propTypes = {
   onMouseLeave: PropTypes.func, // callback function when mouse pointer is left a square
   transformDayElement: PropTypes.func, // function to further transform the svg element for a single day
   firstWeekdayMonday: PropTypes.bool, // whether to start the week from Monday instead of Sunday
+  shouldPadWeekdayLabels: PropTypes.bool, // whether to pad to the left of the weekday labels
 };
 
 CalendarHeatmap.defaultProps = {
@@ -378,6 +381,7 @@ CalendarHeatmap.defaultProps = {
   showMonthLabels: true,
   firstWeekdayMonday: false,
   showWeekdayLabels: false,
+  shouldPadWeekdayLabels: true,
   showOutOfRangeDays: false,
   tooltipDataAttrs: null,
   titleForValue: null,
